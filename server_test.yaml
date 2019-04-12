@@ -1,0 +1,53 @@
+heat_template_version: 2015-10-15
+description: Launch a basic instance with Ubuntu Xenial image using the
+             ``2048-10-1-1`` flavor, ``my_key`` key,  and one network.
+
+parameters:
+  pool:
+    type: string
+    description: pool id.
+
+resources:
+
+  server:
+    type: OS::Nova::Server
+    properties:
+      image: xenial-server-cloudimg-amd64-disk1
+      flavor: 2048-10-1-1
+      networks:
+      - network: switch1-nat
+      user_data: |
+        #!/bin/bash
+        echo "ALLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO Starting"
+        sudo -i
+        echo "BEFORE UPDATE"
+        apt-get update
+        echo "AFTER UPDATE"
+        echo "BEFORE INSTALL"
+        apt-get --assume-yes --fix-missing install python
+        echo "AFTER INSTALL"
+        echo "BEFORE GET"
+        wget https://raw.githubusercontent.com/houssemmh/INF8480-TP3/master/server.py 
+        echo "AFTER GET"
+        echo "BEFORE SCRIPT"
+        python server.py &
+        echo "AFTER SCRIPT"
+
+  poolMember:
+    type: OS::Neutron::LBaaS::PoolMember
+    properties:
+      address: {get_attr: [server, first_address]}
+      protocol_port: 8080
+      subnet: "4ba321db-9247-454b-9274-faad8ec76461"
+      pool: {get_param: pool}
+
+  
+
+outputs:
+  instance_name:
+    description: tp3.
+    value: { get_attr: [ server, name ] }
+  instance_ip:
+    description: IP address of the instance.
+    value: { get_attr: [ server, first_address ] }
+

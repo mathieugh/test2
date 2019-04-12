@@ -72,59 +72,9 @@ resources:
     properties:
       count: 3
       resource_def:
-        type: OS::Nova::Server
-        properties:
-          # create a unique name for each server
-          # using its index in the group
-          name: my_server_%index%
-          image: xenial-server-cloudimg-amd64-disk1 #{ get_param: image }
-          flavor: 2048-10-1-1 #{ get_param: flavor }
-          networks:
-          - network: switch1-nat
-
-
-  
-      #A completer
-
-    
-  #server:
-    #type: OS::Nova::Server
-    #properties:
-      # create a unique name for each server
-      # using its index in the group
-     # name: my_server_%index%
-      #image: xenial-server-cloudimg-amd64-disk1 #{ get_param: image }
-      #flavor: 2048-10-1-1 #{ get_param: flavor }
-      #networks:
-      #- network: switch1-nat
-
-  poolMember1:
-    type: OS::Neutron::LBaaS::PoolMember
-    properties:
-      address: {get_attr: [server_nodes, resource.0, first_address]}
-      protocol_port: 8080
-      subnet: "4ba321db-9247-454b-9274-faad8ec76461"
-      pool: {get_resource: mypool}
-
-  
-  poolMember2:
-    type: OS::Neutron::LBaaS::PoolMember
-    properties:
-      address: {get_attr: [server_nodes, resource.1, first_address]}
-      protocol_port: 8080
-      subnet: "4ba321db-9247-454b-9274-faad8ec76461"
-      pool: {get_resource: mypool}
-
-
-
-  poolMember3:
-    type: OS::Neutron::LBaaS::PoolMember
-    properties:
-      address: {get_attr: [server_nodes, resource.2, first_address]}
-      protocol_port: 8080
-      subnet: "4ba321db-9247-454b-9274-faad8ec76461"
-      pool: {get_resource: mypool}
-
+        type: server_test.yaml
+        properties: 
+          pool: {get_resource: mypool}
   
 
   mymonitor:
@@ -136,12 +86,6 @@ resources:
       timeout: 5000
       type: HTTP
       #A completer
-
-  # association:
-  #   type: OS::Neutron::FloatingIPAssociation
-  #   properties:
-  #     floatingip_id: { get_resource: floating_ip }
-  #     port_id: { get_attr: [myloadbalancer, vip_port_id ]} #{ get_resource: port }
 
 
 outputs:
