@@ -1,0 +1,165 @@
+heat_template_version: 2014-10-16
+
+description: A template to deploy a load balanced web server
+
+parameters:
+
+  # image:
+  #   type: string
+  #   description: Image utilisee pour les serveurs
+  #   #A completer
+
+  # flavor:
+  #   type: string
+  #   description: Flavor utilisee par les serveurs
+  #   #A completer
+
+  # subnet_id:
+  #   type: string
+  #   description: Sous-reseau dans lequel le load balancer sera situe
+    #A completer
+
+    # Vous pouvez ajouter d'autres paramètres
+    # Il faut bien définir les descriptions, les valeurs par default et les contraintes
+
+resources:
+
+
+  myloadbalancer:
+    type: OS::Neutron::LBaaS::LoadBalancer
+    properties:
+      #pool_id: { get_resource: mypool }
+      #members: { get_attr: [server_nodes, refs]}
+      vip_subnet: "4ba321db-9247-454b-9274-faad8ec76461" #{get_param: subnet_id}
+      #A completer
+ 
+  floating_ip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network_id: 1fa7fade-2722-4677-9e2b-da22d385202b
+      port_id: { get_attr: [myloadbalancer, vip_port_id ]}
+
+
+ 
+  mylistener:
+    type: OS::Neutron::LBaaS::Listener
+    properties:
+      protocol: HTTP
+      protocol_port: 8080
+      loadbalancer: {get_resource: myloadbalancer}
+      #default_pool: {get_resource: mypool}
+
+
+  mypool:
+    type: OS::Neutron::LBaaS::Pool
+    properties:
+      lb_algorithm: ROUND_ROBIN
+      loadbalancer: {get_resource: myloadbalancer}
+      listener: {get_resource: mylistener}
+      protocol: HTTP
+     
+      #A completer
+
+  #port:
+   # type: OS::Neutron::Port
+    #properties:
+     # network: switch1-nat
+      #fixed_ips:
+       # - subnet_id: "4ba321db-9247-454b-9274-faad8ec76461"
+
+  server_nodes:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: 3
+      resource_def:
+        type: OS::Nova::Server
+        properties:
+          # create a unique name for each server
+          # using its index in the group
+          name: my_server_%index%
+          image: xenial-server-cloudimg-amd64-disk1 #{ get_param: image }
+          flavor: 2048-10-1-1 #{ get_param: flavor }
+          networks:
+          - network: switch1-nat
+
+
+  
+      #A completer
+
+    
+  #server:
+    #type: OS::Nova::Server
+    #properties:
+      # create a unique name for each server
+      # using its index in the group
+     # name: my_server_%index%
+      #image: xenial-server-cloudimg-amd64-disk1 #{ get_param: image }
+      #flavor: 2048-10-1-1 #{ get_param: flavor }
+      #networks:
+      #- network: switch1-nat
+
+  poolMember1:
+    type: OS::Neutron::LBaaS::PoolMember
+    properties:
+      address: {get_attr: [server_nodes, resource.0, first_address]}
+      protocol_port: 8080
+      subnet: "4ba321db-9247-454b-9274-faad8ec76461"
+      pool: {get_resource: mypool}
+
+  
+  poolMember2:
+    type: OS::Neutron::LBaaS::PoolMember
+    properties:
+      address: {get_attr: [server_nodes, resource.1, first_address]}
+      protocol_port: 8080
+      subnet: "4ba321db-9247-454b-9274-faad8ec76461"
+      pool: {get_resource: mypool}
+
+
+
+  poolMember3:
+    type: OS::Neutron::LBaaS::PoolMember
+    properties:
+      address: {get_attr: [server_nodes, resource.2, first_address]}
+      protocol_port: 8080
+      subnet: "4ba321db-9247-454b-9274-faad8ec76461"
+      pool: {get_resource: mypool}
+
+  
+
+  mymonitor:
+    type: OS::Neutron::LBaaS::HealthMonitor
+    properties:
+      delay: 15000
+      max_retries: 2
+      pool: {get_resource: mypool}
+      timeout: 5000
+      type: HTTP
+      #A completer
+
+  # association:
+  #   type: OS::Neutron::FloatingIPAssociation
+  #   properties:
+  #     floatingip_id: { get_resource: floating_ip }
+  #     port_id: { get_attr: [myloadbalancer, vip_port_id ]} #{ get_resource: port }
+
+
+outputs:
+    instance_ip:
+      value: {get_attr: [server_nodes, refs, 0, show]}
+    instance_ip2:
+      value: {get_attr: [server_nodes, refs, 0, addresses]}
+    instance_ip3:
+      value: {get_attr: [server_nodes, refs, 0, accessIPv4]}
+    instance_ip4:
+      value: {get_resource: {get_attr: [server_nodes, refs, 0]}}
+
+    instance_ip4:
+      value: {get_attr: [server_nodes, refs, 0, name]}
+    instance_ip5:
+      value: {get_attr: [server_nodes, refs, 0, networks]}
+    instance_ip6:
+      value: {get_attr: [server_nodes, show]}
+    instance_ip7:
+      value: {get_attr: [server_nodes, resource.0, first_address]}
+      #description: The IP address of the first node
