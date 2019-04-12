@@ -18,20 +18,12 @@ resources:
       - network: switch1-nat
       user_data: |
         #!/bin/bash
-        echo "ALLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO Starting"
+        echo "Starting boot script"
         sudo -i
-        echo "BEFORE UPDATE"
         apt-get update
-        echo "AFTER UPDATE"
-        echo "BEFORE INSTALL"
         apt-get --assume-yes --fix-missing install python
-        echo "AFTER INSTALL"
-        echo "BEFORE GET"
         wget https://raw.githubusercontent.com/houssemmh/INF8480-TP3/master/server.py 
-        echo "AFTER GET"
-        echo "BEFORE SCRIPT"
         python server.py &
-        echo "AFTER SCRIPT"
 
   poolMember:
     type: OS::Neutron::LBaaS::PoolMember
