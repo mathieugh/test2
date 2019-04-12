@@ -72,7 +72,7 @@ resources:
     properties:
       count: 3
       resource_def:
-        type: https://raw.githubusercontent.com/mathieugh/test2/master/server_test.yaml
+        type: https://raw.githubusercontent.com/mathieugh/test2/e515fcc167f15208e4904e30ca047a950754938e/server_test.yaml
         properties: 
           pool: {get_resource: mypool}
   
@@ -89,21 +89,6 @@ resources:
 
 
 outputs:
-    instance_ip:
-      value: {get_attr: [server_nodes, refs, 0, show]}
-    instance_ip2:
-      value: {get_attr: [server_nodes, refs, 0, addresses]}
-    instance_ip3:
-      value: {get_attr: [server_nodes, refs, 0, accessIPv4]}
-    instance_ip4:
-      value: {get_resource: {get_attr: [server_nodes, refs, 0]}}
-
-    instance_ip4:
-      value: {get_attr: [server_nodes, refs, 0, name]}
-    instance_ip5:
-      value: {get_attr: [server_nodes, refs, 0, networks]}
     instance_ip6:
       value: {get_attr: [server_nodes, show]}
-    instance_ip7:
-      value: {get_attr: [server_nodes, resource.0, first_address]}
-      #description: The IP address of the first node
+      description: Information on the resource group.
