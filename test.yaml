@@ -72,7 +72,7 @@ resources:
     properties:
       count: 3
       resource_def:
-        type: server_test.yaml
+        type: https://raw.githubusercontent.com/mathieugh/test2/master/server_test.yaml
         properties: 
           pool: {get_resource: mypool}
   
