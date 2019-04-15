@@ -1,11 +1,11 @@
 heat_template_version: 2015-10-15
 description: Launch a basic instance with Ubuntu Xenial image using the
-             ``2048-10-1-1`` flavor, ``my_key`` key,  and one network.
+             ``2048-10-1-1`` flavor and associate it with a pool member.
 
 parameters:
   pool:
     type: string
-    description: pool id.
+    description: The pool id.
 
 resources:
 
@@ -37,7 +37,7 @@ resources:
 
 outputs:
   instance_name:
-    description: tp3.
+    description: Name of the server.
     value: { get_attr: [ server, name ] }
   instance_ip:
     description: IP address of the instance.
