@@ -4,42 +4,18 @@ description: A template to deploy a load balanced web server
 
 parameters:
 
-  # image:
-  #   type: string
-  #   description: Image utilisee pour les serveurs
-  #   #A completer
-
-  # flavor:
-  #   type: string
-  #   description: Flavor utilisee par les serveurs
-  #   #A completer
-
-  # subnet_id:
-  #   type: string
-  #   description: Sous-reseau dans lequel le load balancer sera situe
-    #A completer
-
-    # Vous pouvez ajouter d'autres paramètres
-    # Il faut bien définir les descriptions, les valeurs par default et les contraintes
-
 resources:
-
 
   myloadbalancer:
     type: OS::Neutron::LBaaS::LoadBalancer
     properties:
-      #pool_id: { get_resource: mypool }
-      #members: { get_attr: [server_nodes, refs]}
-      vip_subnet: "4ba321db-9247-454b-9274-faad8ec76461" #{get_param: subnet_id}
-      #A completer
+      vip_subnet: "4ba321db-9247-454b-9274-faad8ec76461"
  
   floating_ip:
     type: OS::Neutron::FloatingIP
     properties:
       floating_network_id: 1fa7fade-2722-4677-9e2b-da22d385202b
       port_id: { get_attr: [myloadbalancer, vip_port_id ]}
-
-
  
   mylistener:
     type: OS::Neutron::LBaaS::Listener
@@ -47,8 +23,6 @@ resources:
       protocol: HTTP
       protocol_port: 8080
       loadbalancer: {get_resource: myloadbalancer}
-      #default_pool: {get_resource: mypool}
-
 
   mypool:
     type: OS::Neutron::LBaaS::Pool
@@ -57,22 +31,13 @@ resources:
       loadbalancer: {get_resource: myloadbalancer}
       listener: {get_resource: mylistener}
       protocol: HTTP
-     
-      #A completer
-
-  #port:
-   # type: OS::Neutron::Port
-    #properties:
-     # network: switch1-nat
-      #fixed_ips:
-       # - subnet_id: "4ba321db-9247-454b-9274-faad8ec76461"
 
   server_nodes:
     type: OS::Heat::ResourceGroup
     properties:
       count: 3
       resource_def:
-        type: https://raw.githubusercontent.com/mathieugh/test2/e515fcc167f15208e4904e30ca047a950754938e/server_test.yaml
+        type: https://raw.githubusercontent.com/mathieugh/test2/746a3974d7b14465fee3aef469dd0dc312df3ba4/server.yaml
         properties: 
           pool: {get_resource: mypool}
   
@@ -85,8 +50,6 @@ resources:
       pool: {get_resource: mypool}
       timeout: 5000
       type: HTTP
-      #A completer
-
 
 outputs:
     instance_ip6:
